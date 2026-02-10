@@ -1,4 +1,4 @@
-package com.credrails.credrailsfileingressegresspoc;
+package com.credrails.credrailsfileingressegresspoc.exceptions;
 
 /**
  * ValidationException - class description.

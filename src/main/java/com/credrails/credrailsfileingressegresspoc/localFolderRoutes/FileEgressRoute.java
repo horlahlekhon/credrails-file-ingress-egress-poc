@@ -1,5 +1,6 @@
-package com.credrails.credrailsfileingressegresspoc;
+package com.credrails.credrailsfileingressegresspoc.localFolderRoutes;
 
+import lombok.*;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.rest.RestParamType;
@@ -117,4 +118,6 @@ public class FileEgressRoute extends RouteBuilder {
                     exchange.getIn().setBody(zipBytes);
                 });
     }
-}
+
+
+    }

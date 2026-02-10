@@ -1,4 +1,4 @@
-package com.credrails.credrailsfileingressegresspoc;
+package com.credrails.credrailsfileingressegresspoc.localFolderRoutes;
 
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.stereotype.Component;

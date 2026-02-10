@@ -1,4 +1,4 @@
-package com.credrails.credrailsfileingressegresspoc;
+package com.credrails.credrailsfileingressegresspoc.s3Routes;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
