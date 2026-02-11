@@ -1,0 +1,90 @@
+services:
+
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  sftp1:
+    image: olalekan/dummy-sftp:latest
+    environment:
+      APP_MODE: sftp
+      SFTP_ROOT: /data/sftp
+      SFTP_PORT: "2222"
+    ports:
+      - "2222:2222"
+    volumes:
+      - ./test_dir/sftp:/data/sftp
+
+  sftp2:
+    image: olalekan/dummy-sftp:latest
+    environment:
+      APP_MODE: sftp
+      SFTP_ROOT: /data/sftp
+      SFTP_PORT: "2221"
+    ports:
+      - "2221:2221"
+    volumes:
+      - ./test_dir/sftp2:/data/sftp
+
+  app:
+    image: olalekan/camel-poc:latest
+    ports:
+      - "8080:8080"
+    environment:
+      SFTP_HOST: sftp1
+      SFTP_PORT: "2222"
+      SFTP_USERNAME: ${SFTP_USERNAME:-testuser}
+      SFTP_PASSWORD: ${SFTP_PASSWORD:-testpass}
+      SFTP_DIRECTORY: ${SFTP_DIRECTORY:-/}
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: "5672"
+      RABBITMQ_USERNAME: ${RABBITMQ_USERNAME:-guest}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-guest}
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+    env_file:
+      - .env
+    volumes:
+      - ./input:/app/input
+      - ./output:/app/output
+    depends_on:
+      rabbitmq:
+        condition: service_started
+      sftp1:
+        condition: service_started
+      redis:
+        condition: service_started
+
+  etl-sim:
+    image: olalekan/dummy-sftp:latest
+    environment:
+      APP_MODE: faststream
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION:-eu-west-1}
+      S3_BUCKET: ${S3_BUCKET:-pocfiletests}
+    env_file:
+      - .env
+    depends_on:
+      rabbitmq:
+        condition: service_started
+
