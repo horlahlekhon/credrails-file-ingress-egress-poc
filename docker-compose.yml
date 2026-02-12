@@ -44,6 +44,18 @@ services:
     volumes:
       - ./test_dir/sftp2:/data/sftp
 
+  sftp3:
+    image: olalekan/dummy-sftp:latest
+    environment:
+      APP_MODE: sftp
+      SFTP_ROOT: /data/sftp
+      SFTP_PORT: "2223"
+    ports:
+      - "2223:2223"
+    volumes:
+      - ./test_dir/sftp3:/data/sftp
+
+
   app:
     image: olalekan/camel-poc:latest
     ports:
