@@ -87,7 +87,8 @@ public class S3IngressRoute extends RouteBuilder {
                 .marshal().json(JsonLibrary.Jackson)
                 .log("Publishing message body: ${body}")
                 .log("Publishing to RabbitMQ...")
-                .to("spring-rabbitmq:file-events?routingKey=file-upload-queue")
+//                .to("spring-rabbitmq:file-events?routingKey=file-upload-queue")
+                .to("nats:file-events")
                 .log("Event published to RabbitMQ");
     }
 }

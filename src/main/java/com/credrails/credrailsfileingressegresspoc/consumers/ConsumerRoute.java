@@ -26,8 +26,9 @@ public class ConsumerRoute extends RouteBuilder {
                 .to("spring-rabbitmq:failed-callbacks-queue?queues=failed-callbacks-queue")
                 .log("Message moved to DLQ");
 
-        from("spring-rabbitmq:processed-files-events?queues=processed-files-queue")
-                .routeId("rabbitmq-consumer-route")
+//        from("spring-rabbitmq:processed-files-events?queues=processed-files-queue")
+          from("nats:processed-files-events?maxMessages=1000")
+                .routeId("consumer-route")
                 .log("Received message from RabbitMQ: ${body}")
                 .unmarshal().json(JsonLibrary.Jackson, ProcessedFileEvent.class)
                 .to("direct:send-file-to-callback");

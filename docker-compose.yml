@@ -1,16 +1,21 @@
 services:
 
 
-  rabbitmq:
-    image: rabbitmq:3-management
+#  rabbitmq:
+#    image: rabbitmq:3-management
+#    ports:
+#      - "5672:5672"
+#      - "15672:15672"
+#    healthcheck:
+#      test: rabbitmq-diagnostics -q ping
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
+
+  nats:
+    image: nats:latest
     ports:
-      - "5672:5672"
-      - "15672:15672"
-    healthcheck:
-      test: rabbitmq-diagnostics -q ping
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      - "4222:4222"
 
   redis:
     image: redis:7-alpine
@@ -68,10 +73,11 @@ services:
       SFTP_DIRECTORY: ${SFTP_DIRECTORY:-/}
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: "5672"
-      RABBITMQ_USERNAME: ${RABBITMQ_USERNAME:-guest}
-      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-guest}
+#      RABBITMQ_USERNAME: ${RABBITMQ_USERNAME:-guest}
+#      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-guest}
       REDIS_HOST: redis
       REDIS_PORT: "6379"
+      NAT_SERVER: nats:4222
     env_file:
       - .env
     volumes:
@@ -89,11 +95,12 @@ services:
     image: olalekan/dummy-sftp:latest
     environment:
       APP_MODE: faststream
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+#      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION:-eu-west-1}
       S3_BUCKET: ${S3_BUCKET:-pocfiletests}
+      NAT_SERVER: nats:4222
     env_file:
       - .env
     depends_on:
